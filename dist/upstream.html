@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Welcome to Vue</title>
+  <!-- Vue.js -->
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+  <div id="app">
+    <form ref="form" method="post" class="send-message" :action="action" target="">
+      <input type="hidden" name="ContactName" placeholder="Name" v-model="name"/>
+      <input type="hidden" name="Email" placeholder="Email" v-model="email"/>
+      <input type="hidden" name="Phone" placeholder="Phone Number" v-model="phone" />
+      <input type="hidden" name="CustomerId" v-model="customerId" />
+      <input type="hidden" name="UserLanguage" v-model="language" />
+      <input type="hidden" name="Reason" v-model="reason" />
+      <input type="hidden" name="Parameters[CustomKey]" value="CustomValue" />
+      <input type="hidden" name="Parameters[TimeZoneOffset]" value="Central Standard Time" />
+      <input type="hidden" name="Message" placeholder="Message" v-model="message" />
+    </form>
+  </div>
+
+  <script>
+  var app = new Vue({
+    el: '#app',
+    data () {
+      return {
+        name: '',
+        email: '',
+        phone: '',
+        customerId: '1',
+        language: 'en',
+        reason: 'Billing',
+        message: ''
+      }
+    },
+    mounted () {
+      this.checkForm()
+    },
+    computed: {
+      query () {
+        return new URLSearchParams(window.location.search)
+      },
+      datacenter () {
+        return this.query.get('datacenter')
+      },
+      session () {
+        return this.query.get('session')
+      },
+      tunnelHost () {
+        // return this.query.get('tunnel')
+        return 'tunnel.cc-dcloud.com'
+      },
+      action () {
+        // this is the URL the form will submit to. it starts the Upstream chat.
+        return `https://${this.datacenter}-${this.session}.${this.tunnelHost}/Home/Chat`
+      }
+    },
+    methods: {
+      checkForm () {
+        // extract query parameters as constants
+        const name = this.query.get('name')
+        const fieldname_1 = this.query.get('fieldname_1')
+        const email = this.query.get('email')
+        const fieldname_2 = this.query.get('fieldname_2')
+        const phone = this.query.get('phone')
+        const fieldname_3 = this.query.get('fieldname_3')
+        const message = this.query.get('message')
+        const fieldname_4 = this.query.get('fieldname_4')
+        const customerId = this.query.get('customerId')
+        const language = this.query.get('language')
+        const reason = this.query.get('reason')
+
+        // update form values with query string values
+        if (name) {
+          this.name = name
+        } else if (fieldname_1) {
+          this.name = fieldname_1
+        }
+        if (email) {
+          this.email = email
+        } else if (fieldname_2) {
+          this.email = fieldname_2
+        }
+        if (phone) {
+          this.phone = phone
+          this.customerId = phone
+        } else if (fieldname_3) {
+          this.phone = fieldname_3
+          this.customerId = fieldname_3
+        }
+        if (message) {
+          this.message = message
+        } else if (fieldname_4) {
+          this.message = fieldname_4
+        }
+        if (customerId) {
+          this.customerId = customerId
+        }
+        if (language) {
+          this.language = language
+        }
+        if (reason) {
+          this.reason = reason
+        }
+        // log action URL
+        console.log('submit upstream chat form - this.tunnelHost = ', this.tunnelHost)
+        // set up an interval to check for the tunnelHost getter data to exist
+        const interval = setInterval(() => {
+          // wait until tunnelHost is valid before submtting the form
+          if (this.tunnelHost && this.tunnelHost.length) {
+            // submit form
+            this.$refs.form.submit()
+            // stop the interval
+            clearInterval(interval)
+          }
+        }, 100)
+      }
+    }
+  })
+  </script>
+</body>
+</html>
